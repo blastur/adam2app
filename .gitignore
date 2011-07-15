@@ -1,0 +1,8 @@
+*.o
+adam2app.elf
+adam2app.bin
+adam2app.srec
+map.lst
+srec2bin
+adam2dump
+

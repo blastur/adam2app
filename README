@@ -1,0 +1,60 @@
+Introduction
+------------
+This is a cleaned up version of the "ADAM2 App" available from 
+
+	http://www.seattlewireless.net/ADAM2
+
+It's basically just a simple "Hello World"-program for the ADAM2 bootloader.
+
+ADAM2 is a bootloader used in a few embedded devices, such as the AR-7 based 
+D-Link DSL 504T router. The responsibility of a bootloader is to (among other 
+things) load up an application from persistent media (such as a harddrive, NAND 
+flash memory or from a laser disc, possibly over a network connection) to the 
+main memory and execute it.
+
+In routers or other embedded devices, this application is often the Linux kernel, 
+but it is possible to load any kind of program, as long as it is compiled for 
+the MIPS32 architecture and is prefixed with the ADAM2 app header. This is one 
+of those other programs!
+		
+Why would I want this?
+You probably don't. This application only serves as a playground for anyone 
+interesting in how low-level software works. It can also be used to verify the 
+ADAM2 functionality of a device.
+
+How do I use it?
+Please note that you will need a MIPS cross compiler in order to compile this! I 
+find it very convenient to build all my toolchains using Buildroot, but whatever 
+method you prefer should work as long as it produces a MIPS32 compiler. If your 
+compiler is not called 'mipsel-linux-gcc' (it should), you can pass a custom 
+name prefix to make using:
+	
+	CROSS_COMPILE=my-compiler-prefix- make
+
+(or by setting the CROSS_COMPILE environment variable).
+
+Since TI has been kind enough to provide us with a SREC to BIN converter which 
+also adds the necessary ADAM2 app headers, we use it instead of going directly 
+to BIN using objcopy. Most likely not the optimal way to do it, but it works ;-)
+
+	MIPSEL ELF -> (objcopy) -> SREC -> (TI srec2bin tool) -> BIN
+
+Normally, printing stuff to a serial console involves a lot more code than shown 
+in this example. Most likely you will need to at least set-up the UART hardware, 
+and possibly power up other core subsystems before you can do anything.
+		
+Fortunately, ADAM2 emulates YAMON. Think of YAMON as a set of functions which 
+lies in a ROM memory (inside the hardware), which you can call from your 
+application. These are accessed through a call vector table, starting at memory 
+offset 0x90000500. Genuine YAMON is usually only available on MIPS developer 
+boards, but fortunate for us, the ADAM2 emulates a few of its APIs. One of the 
+three APIs it implements happens to be a print-to-console function. Happy days!
+		
+Step-by-step usage
+- Build using "make". This will produce the final ADAM2 application file, 
+called "adam2app.bin".
+- Check the docs at http://www.seattlewireless.net/ADAM2 for details on how to 
+upload your program to the device.
+- You need a serial cable attached to your device in order for this application 
+to make sense, as it only prints stuff to the debugconsole.
+
