@@ -286,7 +286,7 @@ void binRecEnd(void)
           printf("[RecEnd  ] CheckSum[0x%08X] Length[%4d] Length[0x%X] RecEnd[0x%08lX]\n",
                 CheckSum, RecLength, RecLength, RecEnd);
 
-    fseek( fOut, -(RecLength), SEEK_CUR);  // move back Start Of Data
+    fseek( fOut, -((long) RecLength), SEEK_CUR);  // move back Start Of Data
 
     dumpfTell("Data   ", -1);
 
